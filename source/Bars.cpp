@@ -2,7 +2,6 @@
 #include <climits>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Sleep.hpp>

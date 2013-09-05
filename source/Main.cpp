@@ -1,4 +1,3 @@
-#include <iostream> 
 #include <memory>
 #include <cstdlib>
 
@@ -10,7 +9,7 @@
 int main(int argc, char** argv) {
     unsigned width(800), height(450), numOfBars(100);
     std::unique_ptr<sf::RenderWindow> window(new sf::RenderWindow(sf::VideoMode(width, height), "Bars", sf::Style::Close));
-    
+
     Bars bars(window.get(), numOfBars, width, height);
     sf::Event event;
     while (window->isOpen()) {
