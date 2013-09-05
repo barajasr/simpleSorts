@@ -6,14 +6,15 @@
 #include <SFML/System/Vector2.hpp>
 
 namespace sf{
-   class RectangleShape;
-   class RenderWindow;
+    class RectangleShape;
+    class RenderWindow;
 }
 
 class Bar {
     private:
-    bool Sorted;
+    bool Blank;
     bool Current;
+    bool Sorted;
     unsigned Value;
     sf::RectangleShape* Rect;
 
@@ -27,6 +28,7 @@ class Bar {
     sf::Vector2f getPosition() const;
     unsigned getValue() const { return Value;}
     void draw(sf::RenderWindow* window);
+    void setBlank();
     void setSorted();
     void setCurrent();
     void setPosition(const sf::Vector2f& pos);

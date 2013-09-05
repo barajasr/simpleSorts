@@ -2,6 +2,7 @@
 #include <climits>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Sleep.hpp>
@@ -47,8 +48,7 @@ bool Bars::isValid() const {
 	O(n²) comparisons and swaps
 	Adaptive: O(n) when nearly sorted
 
-	Sidenote: -O2 causes window closure when calling this function
-	during 2nd pass of sort.
+	Sidenote: -O1 now causes window closure when reaches end of outer loop
 **/
 void Bars::bubbleSort() {
 	window->setTitle("Sort your shit: Bubble Sort");
@@ -57,19 +57,33 @@ void Bars::bubbleSort() {
 	for (unsigned i(0); i <= size && window->isOpen(); ++i) {
 		for (unsigned j(size); j > i; --j) {
 			this->checkForEvents();
+			// Highlight current bar that will be used to compare left with
 			Collection.at(j)->setCurrent();
-			this->render();
+			Collection.at(j)->draw(window);
+			window->display();
 
-			if(Collection.at(j)->getValue() < Collection.at(j-1)->getValue())
+			if(Collection.at(j)->getValue() < Collection.at(j-1)->getValue()) {
+				// Swap needed, black out both bars. Then swap and fill in with
+				// respective color state
+				Collection.at(j)->setBlank();
+				Collection.at(j)->draw(window);
+				Collection.at(j-1)->setBlank();
+				Collection.at(j-1)->draw(window);
 				this->swap(j, j-1);
-	
-			// Sorted, followed by unsorted
-			Collection.at(j-1)->setSorted();
-			Collection.at(j)->setUnsorted();
+				Collection.at(j)->setUnsorted();
+				Collection.at(j)->draw(window);
+				Collection.at(j-1)->setCurrent();
+				Collection.at(j-1)->draw(window);
+				window->display();
+			} else {
+				// No swap, reset, and  move on
+				Collection.at(j)->setUnsorted();
+				Collection.at(j)->draw(window);
+			}
 		}
+		Collection.at(i)->setSorted();
+		Collection.at(i)->draw(window);
 	}
-	// Last stupid bar
-	Collection.at(size)->setSorted();
 }
 
 void Bars::checkForEvents() {

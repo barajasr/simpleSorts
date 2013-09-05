@@ -10,21 +10,7 @@
 int main(int argc, char** argv) {
     unsigned width(800), height(450), numOfBars(100);
     std::unique_ptr<sf::RenderWindow> window(new sf::RenderWindow(sf::VideoMode(width, height), "Bars", sf::Style::Close));
-
-    if (argc >= 2) {
-        std::string num(argv[1]);
-        if (num.at(0) == '-')
-            num.assign(num, 1, num.size());
-        try {
-            numOfBars = std::stoul(num.c_str());
-        } catch (const std::invalid_argument& arg) {
-            std::cerr << "Invalid argument\n";
-            return 1;
-        } catch (const std::out_of_range& range) {
-            std::cerr << "Out of range exception\n";
-            return 2;
-        }
-    }   
+    
     Bars bars(window.get(), numOfBars, width, height);
     sf::Event event;
     while (window->isOpen()) {
