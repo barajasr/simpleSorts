@@ -1,14 +1,14 @@
 #include <memory>
-#include <cstdlib>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 
 #include "../include/Bars.hpp"
 
-int main(int argc, char** argv) {
+int main(void) {
     unsigned width(800), height(450), numOfBars(100);
-    std::unique_ptr<sf::RenderWindow> window(new sf::RenderWindow(sf::VideoMode(width, height), "Bars", sf::Style::Close));
+    std::unique_ptr<sf::RenderWindow> window(new sf::RenderWindow(
+        sf::VideoMode(width, height), "Bars", sf::Style::Close));
 
     Bars bars(window.get(), numOfBars, width, height);
     sf::Event event;

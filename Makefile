@@ -2,7 +2,7 @@ CC=g++
 IDIR=include
 ODIR=obj
 SDIR=source
-CFLAGS=-std=c++0x -I $(IDIR) -Wall -Wextra -pedantic
+CFLAGS=-std=c++0x -I $(IDIR) -Wall -Wextra -pedantic -O2
 LIBS=-L /usr/local/lib
 LSFML=-lsfml-audio -lsfml-graphics -lsfml-system -lsfml-window
 APP=Bargraph

@@ -25,8 +25,7 @@ Bar::Bar(Bar&& bar) : Blank(bar.Blank), Current(bar.Current), Sorted(bar.Sorted)
 }
 
 Bar& Bar::operator= (const Bar &bar) {
-    // Check for self-assignment by comparing the address of the
-    // implicit object and the parameter
+    // Check for self-assignment
     if (this == &bar)
         return *this;
  

@@ -46,8 +46,6 @@ bool Bars::isValid() const {
 	O(1) extra space
 	O(n²) comparisons and swaps
 	Adaptive: O(n) when nearly sorted
-
-	Sidenote: -O1 now causes window closure when reaches end of outer loop
 **/
 void Bars::bubbleSort() {
 	window->setTitle("Sort your shit: Bubble Sort");
@@ -88,16 +86,15 @@ void Bars::bubbleSort() {
 void Bars::checkForEvents() {
 	sf::Event event;
 	bool paused(false);
-	do {
-		window->pollEvent(event);
+	while (window->pollEvent(event) || (paused && window->isOpen())) {
 		if (event.type == sf::Event::Closed) {
-	            window->close();
+            window->close();
 	    } else if (event.type == sf::Event::KeyPressed) {
 	    	if (event.key.code == sf::Keyboard::P)
 	    		paused ^= true;
 	    }
 	    sf::sleep(sf::milliseconds(3));
-	} while (paused && window->isOpen());
+	}
 
 }
 
@@ -117,19 +114,29 @@ void Bars::insertionSort() {
 	window->setTitle("Sort your shit: Insertion Sort");
 	// Collection[0...i-1] are sorted
 	for (unsigned i(1); i < Collection.size() && window->isOpen(); ++i) {
-	    for (unsigned j(i); j > 0 && (Collection.at(j)->getValue() < Collection.at(j-1)->getValue()); --j) {
-	    	// Window crap
+		unsigned j(i);
+	    while (j > 0 && (Collection.at(j)->getValue() < Collection.at(j-1)->getValue())) {
 			this->checkForEvents();
-	    	Collection.at(j)->setCurrent();
-	    	this->render();
-	        Collection.at(j)->setSorted();
 
-	        this->swap(j, j-1);
+			// Swap needed, black out both bars. Then swap and fill in with
+			// respective color state
+			Collection.at(j)->setBlank();
+			Collection.at(j)->draw(window);
+			Collection.at(j-1)->setBlank();
+			Collection.at(j-1)->draw(window);
+			this->swap(j, j-1);
+			Collection.at(j)->setSorted();
+			Collection.at(j)->draw(window);
+			Collection.at(j-1)->setCurrent();
+			Collection.at(j-1)->draw(window);
+			window->display();
+	        --j;
 		}
-		Collection.at(i-1)->setSorted();
+		// Set bar in sorted place
+		Collection.at(j)->setSorted();
+		Collection.at(j)->draw(window);
+		window->display();
 	}
-	// Bloody last bar
-	Collection.at(Collection.size()-1)->setSorted();
 }
 
 std::vector<Bar*> Bars::merge(std::vector<Bar*>& left, std::vector<Bar*>& right) {
