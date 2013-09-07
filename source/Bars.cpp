@@ -148,6 +148,9 @@ void Bars::insertionSort() {
 			window->display();
 		}
 	}
+	// Bar needs to fill if tallest was left as unsorted on last iteration
+	Collection.back()->setSorted();
+	Collection.back()->draw(window);
 }
 
 std::vector<Bar*> Bars::merge(std::vector<Bar*>& left, std::vector<Bar*>& right) {

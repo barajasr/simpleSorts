@@ -11,6 +11,9 @@ int main(void) {
         sf::VideoMode(width, height), "Bars", sf::Style::Close));
 
     Bars bars(window.get(), numOfBars, width, height);
+    if (!bars.isValid())
+        return 1;
+    
     sf::Event event;
     while (window->isOpen()) {
         while (window->pollEvent(event)){ 
