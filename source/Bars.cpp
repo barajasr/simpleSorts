@@ -52,30 +52,36 @@ void Bars::bubbleSort() {
 	// Collection[0...i-1] are sorted
 	unsigned size(Collection.size()-1);
 	for (unsigned i(0); i <= size && window->isOpen(); ++i) {
+		Bar* current = nullptr;
+		Bar* previous = nullptr;
 		for (unsigned j(size); j > i; --j) {
 			this->checkForEvents();
+
+			current = Collection.at(j);
+			previous = Collection.at(j-1);
 			// Highlight current bar that will be used to compare left with
-			Collection.at(j)->setCurrent();
-			Collection.at(j)->draw(window);
+			current->setCurrent();
+			current->draw(window);
 			window->display();
 
-			if(Collection.at(j)->getValue() < Collection.at(j-1)->getValue()) {
+			if(current->getValue() < previous->getValue()) {
 				// Swap needed, black out both bars. Then swap and fill in with
 				// respective color state
-				Collection.at(j)->setBlank();
-				Collection.at(j)->draw(window);
-				Collection.at(j-1)->setBlank();
-				Collection.at(j-1)->draw(window);
+				current->setBlank();
+				current->draw(window);
+				previous->setBlank();
+				previous->draw(window);
 				this->swap(j, j-1);
-				Collection.at(j)->setUnsorted();
-				Collection.at(j)->draw(window);
-				Collection.at(j-1)->setCurrent();
-				Collection.at(j-1)->draw(window);
+				// Pointees flipped due to swap()
+				previous->setUnsorted();
+				previous->draw(window);
+				current->setCurrent();
+				current->draw(window);
 				window->display();
 			} else {
 				// No swap, reset, and  move on
-				Collection.at(j)->setUnsorted();
-				Collection.at(j)->draw(window);
+				current->setUnsorted();
+				current->draw(window);
 			}
 		}
 		Collection.at(i)->setSorted();
@@ -118,6 +124,7 @@ void Bars::insertionSort() {
 		Bar* previous = nullptr;
 	    for (unsigned j(i); j > 0 && (Collection.at(j)->getValue() < Collection.at(j-1)->getValue()); --j) {
 			this->checkForEvents();
+
 			// Swap needed, black out both bars. Then swap and fill in with
 			// respective color state
 			current = Collection.at(j);
@@ -233,20 +240,44 @@ void Bars::render() {
 void Bars::selectionSort() {
 	window->setTitle("Sort your shit: Selection Sort");
 	// [0...i-1] sorted
-	for (unsigned i(0); i < Collection.size(); ++i) {
-	    unsigned k(i);
+	for (unsigned i(0), k(i); i < Collection.size() && window->isOpen(); ++i, k=i) {
+	    Bar* current = nullptr;
+	    // Scanning for smallest value in unsorted set
 	    for (unsigned j(i+1); j < Collection.size(); ++j){
 	    	this->checkForEvents();
-	    	if (!window->isOpen()) return;
-	    	Collection.at(j)->setCurrent();
-	    	this->render();
-	    	Collection.at(j)->setUnsorted();
 
-	    	if (Collection.at(j)->getValue() < Collection.at(k)->getValue())
+	    	// Seen as scanning animation
+	    	current = Collection.at(j);
+	    	current->setCurrent();
+	    	current->draw(window);
+	    	window->display();
+	    	current->setUnsorted();
+	    	current->draw(window);
+
+	    	if (current->getValue() < Collection.at(k)->getValue())
 	    		k = j;
 	    }
-    	this->swap(i, k);
-    	Collection.at(i)->setSorted();
+
+		// Swap if needed, set state to reflect change
+	    current = Collection.at(i);
+	    if (k!=i) {
+	    	// Swap needed, black out both bars. Then swap and fill in with
+			// respective color state
+		    Bar* smallest = Collection.at(k);
+		    current->setBlank();
+		    current->draw(window);
+		    smallest->setBlank();
+		    smallest->draw(window);
+	    	this->swap(i, k);
+	    	// Pointees flipped due to swap()
+	    	current->setUnsorted();
+	    	current->draw(window);
+	    	smallest->setSorted();
+	    	smallest->draw(window);
+    	} else {
+    		current->setSorted();
+    		current->draw(window);
+    	}
 	}
 }
 
