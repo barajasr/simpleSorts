@@ -114,28 +114,32 @@ void Bars::insertionSort() {
 	window->setTitle("Sort your shit: Insertion Sort");
 	// Collection[0...i-1] are sorted
 	for (unsigned i(1); i < Collection.size() && window->isOpen(); ++i) {
-		unsigned j(i);
-	    while (j > 0 && (Collection.at(j)->getValue() < Collection.at(j-1)->getValue())) {
+		Bar* current = nullptr; 
+		Bar* previous = nullptr;
+	    for (unsigned j(i); j > 0 && (Collection.at(j)->getValue() < Collection.at(j-1)->getValue()); --j) {
 			this->checkForEvents();
-
 			// Swap needed, black out both bars. Then swap and fill in with
 			// respective color state
-			Collection.at(j)->setBlank();
-			Collection.at(j)->draw(window);
-			Collection.at(j-1)->setBlank();
-			Collection.at(j-1)->draw(window);
+			current = Collection.at(j);
+			previous = Collection.at(j-1);
+			current->setBlank();
+			current->draw(window);
+			previous->setBlank();
+			previous->draw(window);
 			this->swap(j, j-1);
-			Collection.at(j)->setSorted();
-			Collection.at(j)->draw(window);
-			Collection.at(j-1)->setCurrent();
-			Collection.at(j-1)->draw(window);
+			// Pointees flipped due to swap()
+			previous->setSorted();
+			previous->draw(window);
+			current->setCurrent();
+			current->draw(window);
 			window->display();
-	        --j;
 		}
 		// Set bar in sorted place
-		Collection.at(j)->setSorted();
-		Collection.at(j)->draw(window);
-		window->display();
+		if (current){
+			current->setSorted();
+			current->draw(window);
+			window->display();
+		}
 	}
 }
 
