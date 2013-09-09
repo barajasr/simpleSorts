@@ -45,7 +45,7 @@ bool Bars::isValid() const {
 	Stable
 	O(1) extra space
 	O(n²) comparisons and swaps
-	Adaptive: O(n) when nearly sorted
+	Adaptive: O(n) when nearly sorted, with break checking for swaps
 **/
 void Bars::bubbleSort() {
 	window->setTitle("Sort your shit: Bubble Sort");
@@ -53,30 +53,18 @@ void Bars::bubbleSort() {
 	unsigned size(Collection.size()-1);
 	for (unsigned i(0); i <= size && window->isOpen(); ++i) {
 		Bar* current = nullptr;
-		Bar* previous = nullptr;
 		for (unsigned j(size); j > i; --j) {
 			this->checkForEvents();
 
-			current = Collection.at(j);
-			previous = Collection.at(j-1);
 			// Highlight current bar that will be used to compare left with
+			current = Collection.at(j);
 			current->setCurrent();
 			current->draw(window);
 			window->display();
 
-			if(current->getValue() < previous->getValue()) {
-				// Swap needed, black out both bars. Then swap and fill in with
-				// respective color state
-				current->setBlank();
-				current->draw(window);
-				previous->setBlank();
-				previous->draw(window);
-				this->swap(j, j-1);
-				// Pointees flipped due to swap()
-				previous->setUnsorted();
-				previous->draw(window);
-				current->setCurrent();
-				current->draw(window);
+			// Swap if needed, and update states
+			if(current->getValue() < Collection.at(j-1)->getValue()) {
+				this->visualSwap({j-1, j}, &Bar::setCurrent, &Bar::setUnsorted);
 				window->display();
 			} else {
 				// No swap, reset, and  move on
@@ -287,7 +275,7 @@ void Bars::swap(unsigned ipos, unsigned iipos) {
 	firstState, secondState: function pointers to: setBlank, setCurrent, setSorted, setUnsorted
 							 Applied after swap, determines visual states on graph as viewed
 							 left to right after swap.
-	Visually blanks out bars found at indices, swaps them, and blits them; no display().
+	Visually blanks out bars found at indices, swaps them, and blits them with new state; no display().
 **/
 void Bars::visualSwap(const std::pair<unsigned, unsigned>& indices, void (Bar::*leftState)(), void (Bar::*rightState)()) {
 	Bar* barOne = Collection.at(std::get<0>(indices));
@@ -297,7 +285,7 @@ void Bars::visualSwap(const std::pair<unsigned, unsigned>& indices, void (Bar::*
 	barTwo->setBlank();
 	barTwo->draw(window);
 	this->swap(std::get<0>(indices), std::get<1>(indices));
-	// Pointees flipped due to swap()
+	// Pointees flipped due to swap(), barTwo=left, barOne=right
 	(barTwo->*leftState)();
 	barTwo->draw(window);
 	(barOne->*rightState)();
