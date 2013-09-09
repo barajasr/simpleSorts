@@ -290,5 +290,4 @@ void Bars::visualSwap(const std::pair<unsigned, unsigned>& indices, void (Bar::*
 	barTwo->draw(window);
 	(barOne->*rightState)();
 	barOne->draw(window);
-	
 }
