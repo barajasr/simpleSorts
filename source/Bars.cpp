@@ -126,7 +126,7 @@ void Bars::insertionSort() {
 
 			// Swap needed
 			current = Collection.at(j);
-			this->visualSwap(std::pair<unsigned, unsigned>(j-1, j), &Bar::setCurrent, &Bar::setSorted);
+			this->visualSwap({j-1, j}, &Bar::setCurrent, &Bar::setSorted);
 			window->display();
 		}
 		// Bar in sorted place
@@ -252,19 +252,7 @@ void Bars::selectionSort() {
 		// Swap if needed, set state to reflect change
 	    current = Collection.at(i);
 	    if (k!=i) {
-	    	// Swap needed, black out both bars. Then swap and fill in with
-			// respective color state
-		    Bar* smallest = Collection.at(k);
-		    current->setBlank();
-		    current->draw(window);
-		    smallest->setBlank();
-		    smallest->draw(window);
-	    	this->swap(i, k);
-	    	// Pointees flipped due to swap()
-	    	current->setUnsorted();
-	    	current->draw(window);
-	    	smallest->setSorted();
-	    	smallest->draw(window);
+		    this->visualSwap({i, k}, &Bar::setSorted, &Bar::setUnsorted);
     	} else {
     		current->setSorted();
     		current->draw(window);
