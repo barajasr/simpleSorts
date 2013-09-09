@@ -7,7 +7,7 @@
 Bar::Bar() : Blank(false), Current(false), Sorted(false), Value(0), Rect(nullptr) {}
 
 Bar::Bar(const unsigned value, const unsigned width, const unsigned height) : Blank(false), Current(false), Sorted(false), Value(value) {
-    Rect = new sf::RectangleShape(sf::Vector2f(static_cast<float>(width), static_cast<float>(height)));
+    Rect = new sf::RectangleShape({static_cast<float>(width), static_cast<float>(height)});
     Rect->setFillColor(sf::Color::Green);
 }
 
@@ -94,7 +94,7 @@ void Bar::setPosition(const sf::Vector2f& pos) {
 }
 
 void Bar::setPosition(const unsigned x, const unsigned y) {
-    setPosition(sf::Vector2f(x, y));
+    this->setPosition({static_cast<float>(x), static_cast<float>(y)});
 }
 
 void Bar::setUnsorted() {

@@ -17,8 +17,8 @@ Bars::Bars(sf::RenderWindow* root, unsigned numOfBars, unsigned width, unsigned 
 	if (root != nullptr) {
     	for (unsigned i(1); i <= numOfBars; ++i) {
     	    Collection.emplace_back(new Bar(i, scaleWidth, i*scaleHeight));
-    	    Collection.at(i-1)->setPosition(sf::Vector2f(static_cast<float>((i-1)*(scaleWidth+1)),
-    	                                                 static_cast<float>(height-(i*scaleHeight))));
+    	    Collection.at(i-1)->setPosition({static_cast<float>((i-1)*(scaleWidth+1)),
+    	                                     static_cast<float>(height-(i*scaleHeight))});
     	}
 	}
 }
@@ -102,7 +102,7 @@ void Bars::draw() {
 	O(1) extra space
 	O(n²) comparisons and swaps
 	Adaptive: O(n) time when nearly sorted
-Very low overhead
+	Very low overhead
 **/
 void Bars::insertionSort() {
 	window->setTitle("Sort your shit: Insertion Sort");
