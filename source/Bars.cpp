@@ -119,29 +119,17 @@ Very low overhead
 void Bars::insertionSort() {
 	window->setTitle("Sort your shit: Insertion Sort");
 	// Collection[0...i-1] are sorted
+	Bar* current = Collection.front();
 	for (unsigned i(1); i < Collection.size() && window->isOpen(); ++i) {
-		Bar* current = nullptr; 
-		Bar* previous = nullptr;
 	    for (unsigned j(i); j > 0 && (Collection.at(j)->getValue() < Collection.at(j-1)->getValue()); --j) {
 			this->checkForEvents();
 
-			// Swap needed, black out both bars. Then swap and fill in with
-			// respective color state
+			// Swap needed
 			current = Collection.at(j);
-			previous = Collection.at(j-1);
-			current->setBlank();
-			current->draw(window);
-			previous->setBlank();
-			previous->draw(window);
-			this->swap(j, j-1);
-			// Pointees flipped due to swap()
-			previous->setSorted();
-			previous->draw(window);
-			current->setCurrent();
-			current->draw(window);
+			this->visualSwap(std::pair<unsigned, unsigned>(j-1, j), &Bar::setCurrent, &Bar::setSorted);
 			window->display();
 		}
-		// Set bar in sorted place
+		// Bar in sorted place
 		if (current){
 			current->setSorted();
 			current->draw(window);
@@ -175,7 +163,7 @@ std::vector<Bar*> Bars::merge(std::vector<Bar*>& left, std::vector<Bar*>& right)
 
 	// Sorted visuals
 	unsigned leftMost(UINT_MAX);
-	for (auto& data : result){
+	for (const auto& data : result){
 		if (leftMost > data->getPosition().x)
 			leftMost = data->getPosition().x;
 	}
@@ -304,4 +292,27 @@ void Bars::swap(unsigned ipos, unsigned iipos) {
 		Collection[iipos] =  tmp;
 		Collection.at(iipos)->setPosition(iiSpritePos.x, iSpritePos.y);
 	}
+}
+
+/**
+	indices: indices of elements to be swapped, expecting smaller index first
+	firstState, secondState: function pointers to: setBlank, setCurrent, setSorted, setUnsorted
+							 Applied after swap, determines visual states on graph as viewed
+							 left to right after swap.
+	Visually blanks out bars found at indices, swaps them, and blits them; no display().
+**/
+void Bars::visualSwap(const std::pair<unsigned, unsigned>& indices, void (Bar::*leftState)(), void (Bar::*rightState)()) {
+	Bar* barOne = Collection.at(std::get<0>(indices));
+	Bar* barTwo = Collection.at(std::get<1>(indices));
+	barOne->setBlank();
+	barOne->draw(window);
+	barTwo->setBlank();
+	barTwo->draw(window);
+	this->swap(std::get<0>(indices), std::get<1>(indices));
+	// Pointees flipped due to swap()
+	(barTwo->*leftState)();
+	barTwo->draw(window);
+	(barOne->*rightState)();
+	barOne->draw(window);
+	
 }
