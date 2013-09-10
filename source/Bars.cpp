@@ -89,7 +89,6 @@ void Bars::checkForEvents() {
 	    }
 	    sf::sleep(sf::milliseconds(3));
 	}
-
 }
 
 void Bars::draw() {

@@ -17,3 +17,6 @@
 
 # Executable
 Bargraph
+
+# Swapfiles
+*.swp
