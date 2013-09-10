@@ -8,7 +8,7 @@
 int main(void) {
     unsigned width(800), height(450), numOfBars(100);
     std::unique_ptr<sf::RenderWindow> window(new sf::RenderWindow(
-        sf::VideoMode(width, height), "Bars", sf::Style::Close));
+        {width, height}, "Bars", sf::Style::Close));
 
     Bars bars(window.get(), numOfBars, width, height);
     if (!bars.isValid())
@@ -27,9 +27,11 @@ int main(void) {
                 else if (event.key.code == sf::Keyboard::M)
                     bars.mergeSort();
                 else if (event.key.code == sf::Keyboard::R)
-                    bars.shuffleBars();
+                    bars.reverse();
                 else if (event.key.code == sf::Keyboard::S)
                     bars.selectionSort();
+                else if (event.key.code == sf::Keyboard::Z)
+                    bars.shuffleBars();
             }
         }
         bars.render();

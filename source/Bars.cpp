@@ -209,6 +209,11 @@ void Bars::render() {
 	}
 }
 
+void Bars::reverse() {
+	for (size_t start(0), end(Collection.size()-1); start < end; ++start, --end)
+		this->swap(start, end);
+}
+
 /**
 	Not stable
 	O(1) extra space

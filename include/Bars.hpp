@@ -32,6 +32,7 @@ class Bars {
     void insertionSort();
     void mergeSort();
     void render();
+    void reverse();
     void selectionSort();
     void shuffleBars();
 };
