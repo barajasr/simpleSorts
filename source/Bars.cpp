@@ -210,8 +210,11 @@ void Bars::render() {
 }
 
 void Bars::reverse() {
-	for (size_t start(0), end(Collection.size()-1); start < end; ++start, --end)
+	for (size_t start(0), end(Collection.size()-1); start < end; ++start, --end) {
+		Collection.at(start)->setUnsorted();
+		Collection.at(end)->setUnsorted();
 		this->swap(start, end);
+	}
 }
 
 /**
@@ -261,7 +264,7 @@ void Bars::shuffleBars() {
 		bar->setUnsorted();
 }
 
-void Bars::swap(unsigned ipos, unsigned iipos) {
+void Bars::swap(const unsigned ipos, const unsigned iipos) {
 	unsigned size(Collection.size());
 	if (ipos < size && iipos < size) {
 		auto iSpritePos = Collection.at(ipos)->getPosition();

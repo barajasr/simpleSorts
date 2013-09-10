@@ -18,7 +18,7 @@ class Bars {
     sf::RenderWindow* window;
 
     void checkForEvents();
-    void swap(unsigned ipos, unsigned iipos);
+    void swap(const unsigned ipos, const unsigned iipos);
     void visualSwap(const std::pair<unsigned, unsigned>& indices, void (Bar::*leftState)(), void (Bar::*rightState)());
     std::vector<Bar*> merge(std::vector<Bar*>& left, std::vector<Bar*>& right);
     std::vector<Bar*> mergeSort(const std::vector<Bar*>& array);
