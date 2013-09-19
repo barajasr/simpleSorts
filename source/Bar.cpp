@@ -1,26 +1,48 @@
+#include <new>
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
 #include "../include/Bar.hpp"
 
-Bar::Bar() : Blank(false), Current(false), Sorted(false), Value(0), Rect(nullptr) {}
+Bar::Bar() 
+    : Blank(false), Current(false), Sorted(false), 
+      Value(0), Rect(nullptr) {}
 
-Bar::Bar(const unsigned value, const unsigned width, const unsigned height) : Blank(false), Current(false), Sorted(false), Value(value) {
-    Rect = new sf::RectangleShape({static_cast<float>(width), static_cast<float>(height)});
+Bar::Bar(const unsigned value, const unsigned width, const unsigned height)
+    : Blank(false), Current(false), Sorted(false), Value(value) {
+    try {
+        Rect = new sf::RectangleShape({static_cast<float>(width),
+                                       static_cast<float>(height)});
+    } catch (const std::bad_alloc& e) {
+        Rect = nullptr;
+        this->Value = 0;
+        return;
+    }
     Rect->setFillColor(sf::Color::Green);
 }
 
-Bar::Bar(const Bar& bar) : Blank(bar.Current), Current(bar.Current), Sorted(bar.Sorted), Value(bar.Value) {
+Bar::Bar(const Bar& bar)
+    : Blank(bar.Current), Current(bar.Current),
+      Sorted(bar.Sorted), Value(bar.Value) {
     if (bar.Rect) {
-        this->Rect = new sf::RectangleShape(bar.Rect->getSize());
+        try {
+            this->Rect = new sf::RectangleShape(bar.Rect->getSize());
+        } catch (const std::bad_alloc& e) {
+            this->Rect = nullptr;
+            this->Value = 0;
+            return;
+        }
         this->Rect->setPosition(bar.Rect->getPosition());
         this->Rect->setFillColor(bar.Rect->getFillColor());
     }
 }
 
-Bar::Bar(Bar&& bar) : Blank(bar.Blank), Current(bar.Current), Sorted(bar.Sorted), Value(bar.Value) { 
-    this->Rect =  bar.Rect;
+Bar::Bar(Bar&& bar)
+    : Blank(bar.Blank), Current(bar.Current),
+      Sorted(bar.Sorted), Value(bar.Value) {
+    this->Rect = bar.Rect;
     bar.Rect = nullptr;
 }
 
@@ -39,7 +61,13 @@ Bar& Bar::operator= (const Bar &bar) {
         this->Rect = nullptr;
     }
     if (bar.Rect) {
-        this->Rect = new sf::RectangleShape(bar.Rect->getSize());
+        try {
+            this->Rect = new sf::RectangleShape(bar.Rect->getSize());
+        } catch(const std::bad_alloc& e) {
+            this->Rect = nullptr;
+            this->Value = 0;
+            return *this;
+        }
         this->Rect->setPosition(bar.Rect->getPosition());
         this->Rect->setFillColor(bar.Rect->getFillColor());
     }

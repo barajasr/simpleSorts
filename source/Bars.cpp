@@ -2,6 +2,7 @@
 #include <climits>
 #include <cstdlib>
 #include <ctime>
+#include <new>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Sleep.hpp>
@@ -11,12 +12,18 @@
 #include "../include/Bars.hpp"
 #include "../include/Bar.hpp"
 
-Bars::Bars(sf::RenderWindow* root, unsigned numOfBars, unsigned width, unsigned height) : 
-	scaleWidth(width/numOfBars -1), scaleHeight(height/numOfBars), window(root) {
+Bars::Bars(sf::RenderWindow* root, unsigned numOfBars, unsigned width, unsigned height)
+    : scaleWidth(width/numOfBars -1), scaleHeight(height/numOfBars),
+      window(root) {
 	std::srand(static_cast<unsigned>(std::time(nullptr)));
 	if (root != nullptr) {
     	for (unsigned i(1); i <= numOfBars; ++i) {
-    	    Collection.emplace_back(new Bar(i, scaleWidth, i*scaleHeight));
+            try{
+    	        Collection.emplace_back(new Bar(i, scaleWidth, i*scaleHeight));
+            } catch(const std::bad_alloc& exception) {
+                Collection.clear();
+                return;
+            } 
     	    Collection.at(i-1)->setPosition({static_cast<float>((i-1)*(scaleWidth+1)),
     	                                     static_cast<float>(height-(i*scaleHeight))});
     	}
