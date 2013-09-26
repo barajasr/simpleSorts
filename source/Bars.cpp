@@ -57,8 +57,9 @@ bool Bars::isValid() const {
 void Bars::bubbleSort() {
 	window->setTitle("Sort your shit: Bubble Sort");
 	// Collection[0...i-1] are sorted
-	unsigned size(Collection.size()-1);
-	for (unsigned i(0); i <= size && window->isOpen(); ++i) {
+	unsigned i{0}, size(Collection.size()-1);
+	for (bool swapped{true}; swapped && window->isOpen(); ++i) {
+        swapped = false;
 		Bar* current = nullptr;
 		for (unsigned j(size); j > i; --j) {
 			this->checkForEvents();
@@ -71,6 +72,7 @@ void Bars::bubbleSort() {
 
 			// Swap if needed, and update states
 			if(current->getValue() < Collection.at(j-1)->getValue()) {
+                swapped = true;
 				this->visualSwap({j-1, j}, &Bar::setCurrent, &Bar::setUnsorted);
 				window->display();
 			} else {
@@ -82,6 +84,8 @@ void Bars::bubbleSort() {
 		Collection.at(i)->setSorted();
 		Collection.at(i)->draw(window);
 	}
+
+    setRange(i, size, &Bar::setSorted);
 }
 
 void Bars::checkForEvents() {
@@ -106,14 +110,12 @@ void Bars::checkForEvents() {
 **/
 void Bars::cocktailSort() {
 	window->setTitle("Sort your shit: Cocktail Sort");
-	// Collection[0...i-1] are sorted
     unsigned i{0}, size(Collection.size()-1);
-    bool swapped{true};
-	while(swapped && window->isOpen()) {
+	for (bool swapped{true}; swapped && window->isOpen(); ++i) {
 		Bar* current = nullptr;
         swapped = false;
         // Foward iteration
-        for (unsigned j(i); j < size-i; ++j) {
+        for (unsigned j(i); j < size-i && window->isOpen(); ++j) {
 			this->checkForEvents();
 
 			// Highlight current bar that will be used to compare right with
@@ -139,7 +141,7 @@ void Bars::cocktailSort() {
 
         if (swapped) {
             current = nullptr;
-            for (unsigned j(size-i-1); j > i; --j) {
+            for (unsigned j(size-i-1); j > i && window->isOpen(); --j) {
                 this->checkForEvents();
 
                 // Highlight current bar that will be used to compare left with
@@ -164,7 +166,6 @@ void Bars::cocktailSort() {
             Collection.at(i)->draw(window);
             window->display();
         }
-        ++i;
     }
 
     setRange(i-1, size-i+1, &Bar::setSorted);
