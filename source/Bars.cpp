@@ -107,9 +107,11 @@ void Bars::checkForEvents() {
 void Bars::cocktailSort() {
 	window->setTitle("Sort your shit: Cocktail Sort");
 	// Collection[0...i-1] are sorted
-	unsigned size(Collection.size()-1);
-	for (unsigned i(0); i < size && window->isOpen(); ++i) {
+    unsigned i{0}, size(Collection.size()-1);
+    bool swapped{true};
+	while(swapped && window->isOpen()) {
 		Bar* current = nullptr;
+        swapped = false;
         // Foward iteration
         for (unsigned j(i); j < size-i; ++j) {
 			this->checkForEvents();
@@ -122,6 +124,7 @@ void Bars::cocktailSort() {
 
 			// Swap if needed, and update states
 			if(current->getValue() > Collection.at(j+1)->getValue()) {
+                swapped = true;
 				this->visualSwap({j, j+1}, &Bar::setUnsorted, &Bar::setCurrent);
 				window->display();
 			} else {
@@ -134,30 +137,37 @@ void Bars::cocktailSort() {
 		Collection.at(size-i)->draw(window);
         window->display();
 
-        current = nullptr;
-		for (unsigned j(size-i-1); j > i; --j) {
-			this->checkForEvents();
+        if (swapped) {
+            current = nullptr;
+            for (unsigned j(size-i-1); j > i; --j) {
+                this->checkForEvents();
 
-			// Highlight current bar that will be used to compare left with
-			current = Collection.at(j);
-			current->setCurrent();
-			current->draw(window);
-			window->display();
+                // Highlight current bar that will be used to compare left with
+                current = Collection.at(j);
+                current->setCurrent();
+                current->draw(window);
+                window->display();
 
-			// Swap if needed, and update states
-			if(current->getValue() < Collection.at(j-1)->getValue()) {
-				this->visualSwap({j-1, j}, &Bar::setCurrent, &Bar::setUnsorted);
-				window->display();
-			} else {
-				// No swap, reset, and  move on
-				current->setUnsorted();
-				current->draw(window);
-			}
-		}
-		Collection.at(i)->setSorted();
-		Collection.at(i)->draw(window);
-        window->display();
-	}
+                // Swap if needed, and update states
+                if(current->getValue() < Collection.at(j-1)->getValue()) {
+                    swapped = true;
+                    this->visualSwap({j-1, j}, 
+                            &Bar::setCurrent, &Bar::setUnsorted);
+                    window->display();
+                } else {
+                    // No swap, reset, and  move on
+                    current->setUnsorted();
+                    current->draw(window);
+                }
+            }
+            Collection.at(i)->setSorted();
+            Collection.at(i)->draw(window);
+            window->display();
+        }
+        ++i;
+    }
+
+    setRange(i-1, size-i+1, &Bar::setSorted);
 }
 
 void Bars::draw() {
@@ -322,6 +332,13 @@ void Bars::selectionSort() {
     		current->draw(window);
     	}
 	}
+}
+
+void Bars::setRange(const unsigned start, const unsigned end, void (Bar::*state)()) {
+    if (start <= end && end < Collection.size())
+        for (unsigned pos{start}; pos <= end; ++pos) {
+            (Collection.at(pos)->*state)();
+        }
 }
 
 void Bars::shuffleBars() {
