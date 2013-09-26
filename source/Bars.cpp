@@ -98,6 +98,68 @@ void Bars::checkForEvents() {
 	}
 }
 
+/**
+	Stable
+	O(1) extra space
+	O(n²) comparisons and swaps
+	Adaptive: O(n) when nearly sorted, with break checking for swaps
+**/
+void Bars::cocktailSort() {
+	window->setTitle("Sort your shit: Cocktail Sort");
+	// Collection[0...i-1] are sorted
+	unsigned size(Collection.size()-1);
+	for (unsigned i(0); i < size && window->isOpen(); ++i) {
+		Bar* current = nullptr;
+        // Foward iteration
+        for (unsigned j(i); j < size-i; ++j) {
+			this->checkForEvents();
+
+			// Highlight current bar that will be used to compare right with
+			current = Collection.at(j);
+			current->setCurrent();
+			current->draw(window);
+			window->display();
+
+			// Swap if needed, and update states
+			if(current->getValue() > Collection.at(j+1)->getValue()) {
+				this->visualSwap({j, j+1}, &Bar::setUnsorted, &Bar::setCurrent);
+				window->display();
+			} else {
+				// No swap, reset, and  move on
+				current->setUnsorted();
+				current->draw(window);
+			}
+		}
+		Collection.at(size-i)->setSorted();
+		Collection.at(size-i)->draw(window);
+        window->display();
+
+        current = nullptr;
+		for (unsigned j(size-i-1); j > i; --j) {
+			this->checkForEvents();
+
+			// Highlight current bar that will be used to compare left with
+			current = Collection.at(j);
+			current->setCurrent();
+			current->draw(window);
+			window->display();
+
+			// Swap if needed, and update states
+			if(current->getValue() < Collection.at(j-1)->getValue()) {
+				this->visualSwap({j-1, j}, &Bar::setCurrent, &Bar::setUnsorted);
+				window->display();
+			} else {
+				// No swap, reset, and  move on
+				current->setUnsorted();
+				current->draw(window);
+			}
+		}
+		Collection.at(i)->setSorted();
+		Collection.at(i)->draw(window);
+        window->display();
+	}
+}
+
 void Bars::draw() {
     for (unsigned i(0); i < Collection.size(); ++i)
         Collection.at(i)->draw(window);

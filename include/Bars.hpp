@@ -28,6 +28,7 @@ class Bars {
     ~Bars();
     bool isValid() const;
     void bubbleSort();
+    void cocktailSort();
     void draw();
     void insertionSort();
     void mergeSort();
