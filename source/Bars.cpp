@@ -369,6 +369,11 @@ void Bars::setRange(const unsigned start, const unsigned end, void (Bar::*state)
 void Bars::siftDown(unsigned root, unsigned end) {
     unsigned largest;
     for (unsigned leftChild{2*root}; leftChild <= end; leftChild=2*root) {
+        Collection.at(root)->setCurrent();
+        Collection.at(root)->draw(window);
+        window->display();
+        Collection.at(root)->setUnsorted();
+        Collection.at(root)->draw(window);
         if (leftChild == end)
             largest = leftChild;
         else
