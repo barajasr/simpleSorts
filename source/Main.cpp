@@ -24,6 +24,8 @@ int main(void) {
                     bars.bubbleSort();
                 else if (event.key.code == sf::Keyboard::C)
                     bars.cocktailSort();
+				else if (event.key.code == sf::Keyboard::H)
+					bars.heapSort();
                 else if (event.key.code == sf::Keyboard::I)
                     bars.insertionSort();
                 else if (event.key.code == sf::Keyboard::M)

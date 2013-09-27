@@ -24,8 +24,9 @@ Bars::Bars(sf::RenderWindow* root, unsigned numOfBars, unsigned width, unsigned 
                 Collection.clear();
                 return;
             } 
-    	    Collection.at(i-1)->setPosition({static_cast<float>((i-1)*(scaleWidth+1)),
-    	                                     static_cast<float>(height-(i*scaleHeight))});
+    	    Collection.at(i-1)->setPosition(
+                    {static_cast<float>((i-1)*(scaleWidth+1)),
+                    static_cast<float>(height-(i*scaleHeight))});
     	}
 	}
 }
@@ -85,7 +86,7 @@ void Bars::bubbleSort() {
 		Collection.at(i)->draw(window);
 	}
 
-    setRange(i, size, &Bar::setSorted);
+    this->setRange(i, size, &Bar::setSorted);
 }
 
 void Bars::checkForEvents() {
@@ -168,12 +169,35 @@ void Bars::cocktailSort() {
         }
     }
 
-    setRange(i-1, size-i+1, &Bar::setSorted);
+    this->setRange(i-1, size-i+1, &Bar::setSorted);
 }
 
 void Bars::draw() {
     for (unsigned i(0); i < Collection.size(); ++i)
         Collection.at(i)->draw(window);
+}
+
+/**
+    Not stable
+    O(1) extra space when sift non-recursive
+    O(n·lg(n)) time
+    Not really adaptive
+**/
+void Bars::heapSort() {
+    window->setTitle("Sort your shit: Heap Sort");
+    const unsigned size(Collection.size()-1);
+    for (int i(size/2); i >= 0; --i)
+        siftDown(i, size);
+
+    for (unsigned end{size}; end >= 1; --end) {
+        visualSwap(std::pair<unsigned, unsigned>(0, end), &Bar::setUnsorted, &Bar::setSorted);
+        window->display();
+        siftDown(0, end-1);
+    }
+
+    // Last bloody Bar
+    // Will be blitted and displayed in main loop
+    Collection.at(0)->setSorted();
 }
 
 /**
@@ -337,17 +361,34 @@ void Bars::selectionSort() {
 
 void Bars::setRange(const unsigned start, const unsigned end, void (Bar::*state)()) {
     if (start <= end && end < Collection.size())
-        for (unsigned pos{start}; pos <= end; ++pos) {
+		for (unsigned pos{start}; pos <= end; ++pos) {
             (Collection.at(pos)->*state)();
         }
+}
+
+void Bars::siftDown(unsigned root, unsigned end) {
+    unsigned largest;
+    for (unsigned leftChild{2*root}; leftChild <= end; leftChild=2*root) {
+        if (leftChild == end)
+            largest = leftChild;
+        else
+            largest = (Collection.at(leftChild)->getValue() > Collection.at(leftChild+1)->getValue()) ?
+                      leftChild : leftChild+1;
+
+        if (Collection.at(root)->getValue() < Collection.at(largest)->getValue()) {
+            visualSwap(std::pair<unsigned, unsigned>(root, largest), &Bar::setUnsorted, &Bar::setUnsorted);
+            window->display();
+            root = largest;
+        } else
+            break;
+	}
 }
 
 void Bars::shuffleBars() {
 	window->setTitle("Sort your shit");
 	for (unsigned i(0); i < Collection.size(); ++i)
 		this->swap(std::rand()%Collection.size(), std::rand()%Collection.size());
-	for (auto& bar : Collection)
-		bar->setUnsorted();
+    setRange(0, Collection.size()-1, &Bar::setUnsorted);
 }
 
 void Bars::swap(const unsigned ipos, const unsigned iipos) {
