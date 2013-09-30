@@ -393,8 +393,8 @@ void Bars::siftDown(unsigned root, unsigned end) {
 
 void Bars::shuffleBars() {
 	window->setTitle("Sort your shit");
-	for (unsigned i(0); i < Collection.size(); ++i)
-		this->swap(std::rand()%Collection.size(), std::rand()%Collection.size());
+	for (int i(Collection.size()-1); i > 0; --i)
+        this->swap(std::rand()%(i+1), i);
     setRange(0, Collection.size()-1, &Bar::setUnsorted);
 }
 
