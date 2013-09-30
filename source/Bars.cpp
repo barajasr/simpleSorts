@@ -186,13 +186,14 @@ void Bars::draw() {
 void Bars::heapSort() {
     window->setTitle("Sort your shit: Heap Sort");
     const unsigned size(Collection.size()-1);
-    for (int i(size/2); i >= 0; --i)
-        siftDown(i, size);
+    for (int i(size/2); i >= 0 && window->isOpen(); --i)
+        this->siftDown(i, size);
 
-    for (unsigned end{size}; end >= 1; --end) {
-        visualSwap(std::pair<unsigned, unsigned>(0, end), &Bar::setUnsorted, &Bar::setSorted);
+    for (unsigned end{size}; end >= 1 && window->isOpen(); --end) {
+        visualSwap(std::pair<unsigned, unsigned>(0, end),
+                   &Bar::setUnsorted, &Bar::setSorted);
         window->display();
-        siftDown(0, end-1);
+        this->siftDown(0, end-1);
     }
 
     // Last bloody Bar
@@ -368,12 +369,13 @@ void Bars::setRange(const unsigned start, const unsigned end, void (Bar::*state)
 
 void Bars::siftDown(unsigned root, unsigned end) {
     unsigned largest;
-    for (unsigned leftChild{2*root}; leftChild <= end; leftChild=2*root) {
+    for (unsigned leftChild{2*root}; leftChild <= end && window->isOpen(); leftChild=2*root) {
         Collection.at(root)->setCurrent();
         Collection.at(root)->draw(window);
         window->display();
         Collection.at(root)->setUnsorted();
         Collection.at(root)->draw(window);
+        this->checkForEvents();
         if (leftChild == end)
             largest = leftChild;
         else
