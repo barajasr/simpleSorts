@@ -154,8 +154,7 @@ void Bars::cocktailSort() {
                 // Swap if needed, and update states
                 if(current->getValue() < Collection.at(j-1)->getValue()) {
                     swapped = true;
-                    this->visualSwap({j-1, j}, 
-                            &Bar::setCurrent, &Bar::setUnsorted);
+                    this->visualSwap({j-1, j}, &Bar::setCurrent, &Bar::setUnsorted);
                     window->display();
                 } else {
                     // No swap, reset, and  move on
@@ -190,8 +189,7 @@ void Bars::heapSort() {
         this->siftDown(i, size);
 
     for (unsigned end{size}; end >= 1 && window->isOpen(); --end) {
-        visualSwap(std::pair<unsigned, unsigned>(0, end),
-                   &Bar::setUnsorted, &Bar::setSorted);
+        visualSwap({0, end}, &Bar::setUnsorted, &Bar::setSorted);
         window->display();
         this->siftDown(0, end-1);
     }
@@ -317,7 +315,7 @@ void Bars::reverse() {
 	for (size_t start(0), end(Collection.size()-1); start < end; ++start, --end) {
 		Collection.at(start)->setUnsorted();
 		Collection.at(end)->setUnsorted();
-		this->swap(start, end);
+		this->swap({start, end});
 	}
 }
 
@@ -383,7 +381,7 @@ void Bars::siftDown(unsigned root, unsigned end) {
                       leftChild : leftChild+1;
 
         if (Collection.at(root)->getValue() < Collection.at(largest)->getValue()) {
-            visualSwap(std::pair<unsigned, unsigned>(root, largest), &Bar::setUnsorted, &Bar::setUnsorted);
+            visualSwap({root, largest}, &Bar::setUnsorted, &Bar::setUnsorted);
             window->display();
             root = largest;
         } else
@@ -393,13 +391,15 @@ void Bars::siftDown(unsigned root, unsigned end) {
 
 void Bars::shuffleBars() {
 	window->setTitle("Sort your shit");
-	for (int i(Collection.size()-1); i > 0; --i)
-        this->swap(std::rand()%(i+1), i);
+	for (int i(Collection.size()-1); i > 1; --i)
+        this->swap({std::rand()%(i+1), i});
     setRange(0, Collection.size()-1, &Bar::setUnsorted);
 }
 
-void Bars::swap(const unsigned ipos, const unsigned iipos) {
+void Bars::swap(const std::pair<unsigned, unsigned> indices) {
 	unsigned size(Collection.size());
+    unsigned ipos = std::get<0>(indices);
+    unsigned iipos = std::get<1>(indices);
 	if (ipos < size && iipos < size) {
 		auto iSpritePos = Collection.at(ipos)->getPosition();
 		auto iiSpritePos = Collection.at(iipos)->getPosition();
@@ -419,14 +419,14 @@ void Bars::swap(const unsigned ipos, const unsigned iipos) {
 							 left to right after swap.
 	Visually blanks out bars found at indices, swaps them, and blits them with new state; no display().
 **/
-void Bars::visualSwap(const std::pair<unsigned, unsigned>& indices, void (Bar::*leftState)(), void (Bar::*rightState)()) {
+void Bars::visualSwap(const std::pair<unsigned, unsigned> indices, void (Bar::*leftState)(), void (Bar::*rightState)()) {
 	Bar* barOne = Collection.at(std::get<0>(indices));
 	Bar* barTwo = Collection.at(std::get<1>(indices));
 	barOne->setBlank();
 	barOne->draw(window);
 	barTwo->setBlank();
 	barTwo->draw(window);
-	this->swap(std::get<0>(indices), std::get<1>(indices));
+	this->swap(std::move(indices));
 	// Pointees flipped due to swap(), barTwo=left, barOne=right
 	(barTwo->*leftState)();
 	barTwo->draw(window);

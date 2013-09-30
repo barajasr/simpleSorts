@@ -20,8 +20,8 @@ class Bars {
     void checkForEvents();
     void setRange(const unsigned start, const unsigned end, void (Bar::*state)());
 	void siftDown(unsigned root, unsigned end);
-    void swap(const unsigned ipos, const unsigned iipos);
-    void visualSwap(const std::pair<unsigned, unsigned>& indices, void (Bar::*leftState)(), void (Bar::*rightState)());
+    void swap(const std::pair<unsigned, unsigned> indices);
+    void visualSwap(const std::pair<unsigned, unsigned> indices, void (Bar::*leftState)(), void (Bar::*rightState)());
     std::vector<Bar*> merge(std::vector<Bar*>& left, std::vector<Bar*>& right);
     std::vector<Bar*> mergeSort(const std::vector<Bar*>& array);
 
