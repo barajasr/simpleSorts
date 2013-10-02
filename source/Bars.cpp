@@ -75,7 +75,6 @@ void Bars::bubbleSort() {
 			if(current->getValue() < Collection.at(j-1)->getValue()) {
                 swapped = true;
 				this->visualSwap({j-1, j}, &Bar::setCurrent, &Bar::setUnsorted);
-				window->display();
 			} else {
 				// No swap, reset, and  move on
 				current->setUnsorted();
@@ -129,7 +128,6 @@ void Bars::cocktailSort() {
 			if(current->getValue() > Collection.at(j+1)->getValue()) {
                 swapped = true;
 				this->visualSwap({j, j+1}, &Bar::setUnsorted, &Bar::setCurrent);
-				window->display();
 			} else {
 				// No swap, reset, and  move on
 				current->setUnsorted();
@@ -155,7 +153,6 @@ void Bars::cocktailSort() {
                 if(current->getValue() < Collection.at(j-1)->getValue()) {
                     swapped = true;
                     this->visualSwap({j-1, j}, &Bar::setCurrent, &Bar::setUnsorted);
-                    window->display();
                 } else {
                     // No swap, reset, and  move on
                     current->setUnsorted();
@@ -190,7 +187,6 @@ void Bars::heapSort() {
 
     for (unsigned end{size}; end >= 1 && window->isOpen(); --end) {
         visualSwap({0, end}, &Bar::setUnsorted, &Bar::setSorted);
-        window->display();
         this->siftDown(0, end-1);
     }
 
@@ -217,7 +213,6 @@ void Bars::insertionSort() {
 			// Swap needed
 			current = Collection.at(j);
 			this->visualSwap({j-1, j}, &Bar::setCurrent, &Bar::setSorted);
-			window->display();
 		}
 		// Bar in sorted place
 		if (current){
@@ -382,7 +377,6 @@ void Bars::siftDown(unsigned root, unsigned end) {
 
         if (Collection.at(root)->getValue() < Collection.at(largest)->getValue()) {
             visualSwap({root, largest}, &Bar::setUnsorted, &Bar::setUnsorted);
-            window->display();
             root = largest;
         } else
             break;
@@ -417,7 +411,8 @@ void Bars::swap(const std::pair<unsigned, unsigned> indices) {
 	firstState, secondState: function pointers to: setBlank, setCurrent, setSorted, setUnsorted
 							 Applied after swap, determines visual states on graph as viewed
 							 left to right after swap.
-	Visually blanks out bars found at indices, swaps them, and blits them with new state; no display().
+	Visually blanks out bars found at indices, swaps them, blits them with
+    new state and displays.
 **/
 void Bars::visualSwap(const std::pair<unsigned, unsigned> indices, void (Bar::*leftState)(), void (Bar::*rightState)()) {
 	Bar* barOne = Collection.at(std::get<0>(indices));
@@ -426,10 +421,12 @@ void Bars::visualSwap(const std::pair<unsigned, unsigned> indices, void (Bar::*l
 	barOne->draw(window);
 	barTwo->setBlank();
 	barTwo->draw(window);
-	this->swap(std::move(indices));
+	this->swap(indices);
 	// Pointees flipped due to swap(), barTwo=left, barOne=right
 	(barTwo->*leftState)();
 	barTwo->draw(window);
 	(barOne->*rightState)();
 	barOne->draw(window);
+
+    window->display();
 }
