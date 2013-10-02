@@ -30,6 +30,8 @@ int main(void) {
                     bars.insertionSort();
                 else if (event.key.code == sf::Keyboard::M)
                     bars.mergeSort();
+                else if (event.key.code == sf::Keyboard::Q)
+                    bars.quickSort();
                 else if (event.key.code == sf::Keyboard::R)
                     bars.reverse();
                 else if (event.key.code == sf::Keyboard::S)

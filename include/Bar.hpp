@@ -25,6 +25,9 @@ class Bar {
     Bar(Bar&& bar);
     Bar& operator= (const Bar& bar);
     ~Bar();
+    bool isBlank() const {return Blank;}
+    bool isCurrent() const {return Current;}
+    bool isSorted() const {return Sorted;}
     sf::Vector2f getPosition() const;
     unsigned getValue() const { return Value;}
     void draw(sf::RenderWindow* window);

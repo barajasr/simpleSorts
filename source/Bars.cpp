@@ -13,22 +13,22 @@
 #include "../include/Bar.hpp"
 
 Bars::Bars(sf::RenderWindow* root, unsigned numOfBars, unsigned width, unsigned height)
-    : scaleWidth(width/numOfBars -1), scaleHeight(height/numOfBars),
-      window(root) {
-	std::srand(static_cast<unsigned>(std::time(nullptr)));
-	if (root != nullptr) {
-    	for (unsigned i(1); i <= numOfBars; ++i) {
+: scaleWidth(width/numOfBars -1), scaleHeight(height/numOfBars),
+  window(root) {
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    if (root != nullptr) {
+        for (unsigned i(1); i <= numOfBars; ++i) {
             try{
-    	        Collection.emplace_back(new Bar(i, scaleWidth, i*scaleHeight));
+                Collection.emplace_back(new Bar(i, scaleWidth, i*scaleHeight));
             } catch(const std::bad_alloc& exception) {
                 Collection.clear();
                 return;
-            } 
-    	    Collection.at(i-1)->setPosition(
-                    {static_cast<float>((i-1)*(scaleWidth+1)),
-                    static_cast<float>(height-(i*scaleHeight))});
-    	}
-	}
+            }
+            Collection.at(i-1)->setPosition(
+                {static_cast<float>((i-1)*(scaleWidth+1)),
+                static_cast<float>(height-(i*scaleHeight))});
+        }
+    }
 }
 
 Bars::~Bars() {
@@ -221,9 +221,16 @@ void Bars::insertionSort() {
 			window->display();
 		}
 	}
-	// Bar needs to fill if tallest was left as unsorted on last iteration
-	Collection.back()->setSorted();
-	Collection.back()->draw(window);
+
+    // Satisfy two conditions:
+	//  -Last bar needs to be set sorted
+    //  -If already was sorted, before insertionSort call, set [1...n-1]
+    for (int i{static_cast<int>(Collection.size()-1)}; i >= 0; --i) {
+        if (!Collection.at(i)->isSorted()) {
+        	Collection.at(i)->setSorted();
+	        Collection.at(i)->draw(window);
+        }
+    }
 }
 
 std::vector<Bar*> Bars::merge(std::vector<Bar*>& left, std::vector<Bar*>& right) {
@@ -298,6 +305,59 @@ std::vector<Bar*> Bars::mergeSort(const std::vector<Bar*>& array) {
 	return merge(left, right);
 }
 
+void Bars::quickSort() {
+    quickSort(0, Collection.size()-1);
+}
+
+/**
+    Not stable
+    O(lg(n)) extra space
+    O(n2) time, but typically O(n·lg(n)) time
+    Adaptive: O(n) time when O(1) unique keys
+
+    |_equal_|_less_|_..._|_greater_|_equal_|_v_|
+    l       p      i     j         q       r
+**/
+void Bars::quickSort(int left, int right) {
+    if (right <= left)
+        return;
+    auto v = Collection.at(right)->getValue();
+    int i = left-1,
+        j = right,
+        p = i,
+        q = right;
+
+    int k;
+    for (;;) {
+        while (Collection.at(++i)->getValue() < v);
+        while (Collection.at(--j)->getValue() > v)
+            if (j == left)
+                break;
+
+        if (i >= j)
+            break;
+        this->visualSwap({i, j}, &Bar::setUnsorted, &Bar::setUnsorted);
+        if (Collection.at(i)->getValue() == v){
+            ++p;
+            this->visualSwap({p, i}, &Bar::setUnsorted, &Bar::setUnsorted);
+        }
+        if (Collection.at(j)->getValue() == v){
+            --q;
+            this->visualSwap({q, j}, &Bar::setUnsorted, &Bar::setUnsorted);
+        }
+    }
+
+    this->visualSwap({i, right}, &Bar::setUnsorted, &Bar::setUnsorted);
+    j = i-1;
+    i += 1;
+    for (k = left; k <= p; ++k, --j)
+        this->visualSwap({k, j}, &Bar::setUnsorted, &Bar::setUnsorted);
+    for (k = right-1; k >= q; --k, ++i)
+        this->visualSwap({k, i}, &Bar::setUnsorted, &Bar::setUnsorted);
+
+    quickSort(left, j);
+    quickSort(i, right);
+}
 void Bars::render() {
 	if (window) {
 		window->clear();
