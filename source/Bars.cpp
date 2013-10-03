@@ -42,6 +42,9 @@ Bars::~Bars() {
 }
 
 bool Bars::isValid() const {
+    if (Collection.empty())
+        return false;
+
     for (unsigned i(0); i < Collection.size(); ++i) 
         if (Collection.at(i)  == nullptr)
             return false;
@@ -327,6 +330,16 @@ void Bars::quickSort(int left, int right) {
         p = i,
         q = right;
 
+    auto pPtr = (p >= 0)? Collection.at(p) : nullptr;
+    if (pPtr) {
+        pPtr->setCurrent();
+        pPtr->draw(window);
+    }
+    auto qPtr = Collection.at(q);
+    qPtr->setCurrent();
+    qPtr->draw(window);
+    window->display();
+
     int k;
     for (;;) {
         while (Collection.at(++i)->getValue() < v);
@@ -354,6 +367,16 @@ void Bars::quickSort(int left, int right) {
         this->visualSwap({k, j}, &Bar::setUnsorted, &Bar::setUnsorted);
     for (k = right-1; k >= q; --k, ++i)
         this->visualSwap({k, i}, &Bar::setUnsorted, &Bar::setUnsorted);
+
+    if (pPtr ) {
+        pPtr = Collection.at(p);
+        pPtr->setUnsorted();
+        pPtr->draw(window);
+    }
+    qPtr = Collection.at(q);
+    qPtr->setUnsorted();
+    qPtr->draw(window);
+    window->display();
 
     quickSort(left, j);
     quickSort(i, right);
