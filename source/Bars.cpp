@@ -309,6 +309,7 @@ std::vector<Bar*> Bars::mergeSort(const std::vector<Bar*>& array) {
 }
 
 void Bars::quickSort() {
+    window->setTitle("Sort your shit: Quicksort");
     quickSort(0, Collection.size()-1);
 }
 
@@ -471,6 +472,44 @@ void Bars::shuffleBars() {
 	for (int i(Collection.size()-1); i > 1; --i)
         this->swap({std::rand()%(i+1), i});
     setRange(0, Collection.size()-1, &Bar::setUnsorted);
+}
+
+void Bars::stoogeSort() {
+	window->setTitle("Sort your shit: Stooge Sort");
+   this->stoogeSort(0, Collection.size()-1);
+}
+
+/**
+    Sorts the first third of list, then last third, and then first third again.
+**/
+void Bars::stoogeSort(unsigned begin, unsigned end) {
+    if (window->isOpen()) {
+        this->checkForEvents();
+        auto barLeft = Collection.at(begin);
+        auto barRight = Collection.at(end);
+        barLeft->setCurrent();
+        barLeft->draw(window);
+        barRight->setCurrent();
+        barRight->draw(window);
+        window->display();
+        
+        if (barRight->getValue() < barLeft->getValue()) {
+            this->visualSwap({begin, end}, &Bar::setSorted, &Bar::setSorted);
+        } else {
+            barLeft->setSorted();
+            barLeft->draw(window);
+            barRight->setSorted();
+            barRight->draw(window);
+            window->display();
+        }
+
+        if (end-begin+1 >= 3) {
+            unsigned third = (end-begin+1)/3;
+            this->stoogeSort(begin, end-third);
+            this->stoogeSort(begin+third, end);
+            this->stoogeSort(begin, end-third);
+        }
+    }
 }
 
 void Bars::swap(const std::pair<unsigned, unsigned> indices) {

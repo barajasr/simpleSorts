@@ -23,6 +23,7 @@ class Bars {
     void quickSort(int left, int right);
     void setRange(const unsigned start, const unsigned end, void (Bar::*state)());
 	void siftDown(unsigned root, unsigned end);
+    void stoogeSort(unsigned begin, unsigned end);
     void swap(const std::pair<unsigned, unsigned> indices);
     void visualSwap(const std::pair<unsigned, unsigned> indices, void (Bar::*leftState)(), void (Bar::*rightState)());
 
@@ -41,6 +42,7 @@ class Bars {
     void reverse();
     void selectionSort();
     void shuffleBars();
+    void stoogeSort();
 };
 
 #endif

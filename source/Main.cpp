@@ -36,6 +36,8 @@ int main(void) {
                     bars.reverse();
                 else if (event.key.code == sf::Keyboard::S)
                     bars.selectionSort();
+                else if (event.key.code == sf::Keyboard::W)
+                    bars.stoogeSort();
                 else if (event.key.code == sf::Keyboard::Z)
                     bars.shuffleBars();
             }
