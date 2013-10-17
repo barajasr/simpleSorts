@@ -480,7 +480,7 @@ void Bars::stoogeSort() {
 }
 
 /**
-    Sorts the first third of list, then last third, and then first third again.
+    Sorts the first ²/₃ of list, then last ²/₃, and then first ²/₃ again.
 **/
 void Bars::stoogeSort(unsigned begin, unsigned end) {
     if (window->isOpen()) {
